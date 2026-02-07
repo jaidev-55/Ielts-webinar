@@ -20,9 +20,7 @@ import {
 const TestimonialsSection: React.FC = () => {
   const [tRef, tVisible] = useInView();
   const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
-
   const activeVideo = useVideoScroll("vidscroll", VIDEO_TESTIMONIALS.length);
-
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {

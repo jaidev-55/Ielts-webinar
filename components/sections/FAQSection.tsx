@@ -1,9 +1,9 @@
 "use client";
-import React, { useState } from "react";
+import { useState } from "react";
 import { FaPlus, FaMinus } from "react-icons/fa";
 import { useInView } from "@/hooks";
-import { scrollToElement } from "@/utils/helpers";
 import { HiChatBubbleLeftRight } from "react-icons/hi2";
+import ModalForm from "../ModalForm";
 
 interface FAQ {
   question: string;
@@ -12,6 +12,7 @@ interface FAQ {
 
 const FAQSection = () => {
   const [activeIndex, setActiveIndex] = useState<number | null>(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [ref, visible] = useInView(0.2);
 
   const faqs: FAQ[] = [
@@ -155,7 +156,7 @@ const FAQSection = () => {
           </p>
 
           <button
-            onClick={() => scrollToElement("register", 200)}
+            onClick={() => setIsModalOpen(true)}
             className="group relative bg-linear-to-r from-orange-400 via-orange-500 to-orange-400  text-white cursor-pointer font-bold px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl font-poppins text-sm sm:text-base hover:shadow-xl hover:shadow-orange-500/40 hover:-translate-y-0.5 active:scale-95 transition-all duration-300 inline-flex items-center gap-2 overflow-hidden border-2 border-orange-400/30"
           >
             {/* Shimmer effect */}
@@ -169,6 +170,11 @@ const FAQSection = () => {
           </button>
         </div>
       </div>
+      <ModalForm
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        brochure={false}
+      />
     </section>
   );
 };

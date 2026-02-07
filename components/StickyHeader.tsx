@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { FaRocket, FaArrowRight } from "react-icons/fa";
-import { scrollToElement } from "@/utils/helpers";
 import ModalForm from "./ModalForm";
 
 interface StickyHeaderProps {

@@ -1,12 +1,12 @@
 import { Country } from "../types";
 
-export const COUNTRIES: Country[] = [
-  { name: "UK", flag: "🇬🇧", unis: "150+" },
-  { name: "Canada", flag: "🇨🇦", unis: "120+" },
-  { name: "Australia", flag: "🇦🇺", unis: "100+" },
-  { name: "Germany", flag: "🇩🇪", unis: "80+" },
-  { name: "France", flag: "🇫🇷", unis: "60+" },
-  { name: "Ireland", flag: "🇮🇪", unis: "50+" },
-  { name: "New Zealand", flag: "🇳🇿", unis: "40+" },
-  { name: "Dubai", flag: "🇦🇪", unis: "30+" },
+export const COUNTRIES = [
+  { name: "UK", flag: "🇬🇧", minScore: "6.0", unis: 130 },
+  { name: "Canada", flag: "🇨🇦", minScore: "6.5", unis: 90 },
+  { name: "Australia", flag: "🇦🇺", minScore: "6.5", unis: 85 },
+  { name: "USA", flag: "🇺🇸", minScore: "6.0", unis: 200 },
+  { name: "Ireland", flag: "🇮🇪", minScore: "6.5", unis: 35 },
+  { name: "New Zealand", flag: "🇳🇿", minScore: "6.5", unis: 25 },
+  { name: "Germany", flag: "🇩🇪", minScore: "6.0", unis: 40 },
+  { name: "France", flag: "🇫🇷", minScore: "6.0", unis: 30 },
 ];

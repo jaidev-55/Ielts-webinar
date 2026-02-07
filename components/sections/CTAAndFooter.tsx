@@ -1,6 +1,5 @@
 "use client";
 
-import { scrollToElement } from "@/utils/helpers";
 import {
   FaRocket,
   FaCheckCircle,
