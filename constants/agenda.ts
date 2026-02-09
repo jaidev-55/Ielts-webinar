@@ -1,41 +1,53 @@
 import {
+  HiOutlineVolumeUp,
+  HiOutlineBookOpen,
   HiOutlinePencilAlt,
-  HiOutlineDocumentText,
+  HiOutlineMicrophone,
   HiOutlineChartBar,
-  HiOutlineExclamationCircle,
-  HiOutlineAcademicCap,
+  HiOutlineLightningBolt,
   HiOutlineClipboardCheck,
+  HiOutlineAcademicCap,
 } from "react-icons/hi";
 
 export const TOPICS = [
   {
-    icon: HiOutlineDocumentText,
-    title: "IELTS Writing Task 1 (Academic & GT)",
-    desc: "Understand all report, letter, and graph types using clear structures aligned with official IELTS scoring criteria.",
+    icon: HiOutlineVolumeUp,
+    title: "IELTS Listening Mastery",
+    desc: "Master all four sections with proven techniques for note-taking, predicting answers, and understanding accents to maximize your Listening band score.",
+  },
+  {
+    icon: HiOutlineBookOpen,
+    title: "IELTS Reading Strategies",
+    desc: "Learn time-saving strategies for skimming, scanning, and identifying key information in Academic and General Training passages efficiently.",
   },
   {
     icon: HiOutlinePencilAlt,
-    title: "IELTS Writing Task 2 Essay Structures",
-    desc: "Learn how to approach opinion, discussion, advantage–disadvantage, and problem–solution essays with clear frameworks.",
+    title: "IELTS Writing Task 1 & Task 2",
+    desc: "Master both Academic and General Training writing with clear frameworks, scoring criteria, and techniques for Task Achievement and Coherence.",
+  },
+  {
+    icon: HiOutlineMicrophone,
+    title: "IELTS Speaking Excellence",
+    desc: "Build confidence in all three speaking parts with vocabulary expansion, fluency techniques, and strategies to handle any topic naturally.",
   },
   {
     icon: HiOutlineChartBar,
-    title: "Band Descriptors Explained Simply",
-    desc: "Understand Task Achievement, Coherence & Cohesion, Lexical Resource, and Grammar exactly as they are assessed in the exam.",
+    title: "Band Score Improvement Framework",
+    desc: "Understand exactly what examiners look for in each module and learn how to meet Band 7+ criteria consistently across all skills.",
   },
   {
-    icon: HiOutlineExclamationCircle,
-    title: "Common Mistakes That Reduce Band Scores",
-    desc: "Identify frequent writing mistakes that prevent candidates from moving beyond Band 6 or 6.5.",
+    icon: HiOutlineLightningBolt,
+    title: "Time Management & Exam Strategy",
+    desc: "Develop powerful time management techniques and exam-day strategies to complete all tasks confidently within time limits.",
   },
   {
     icon: HiOutlineClipboardCheck,
-    title: "Answer Planning, Structure & Time Control",
-    desc: "Learn practical techniques to plan responses efficiently and complete both tasks within IELTS exam time limits.",
+    title: "Full-Length Mock Tests & Feedback",
+    desc: "Practice with realistic IELTS mock tests for all modules and receive detailed feedback to identify strengths and improvement areas.",
   },
   {
     icon: HiOutlineAcademicCap,
-    title: "High-Band Sample Answers Explained",
-    desc: "Analyse Band 7+ sample answers to understand what examiners expect and why higher scores are awarded.",
+    title: "Expert Guidance & Mentorship",
+    desc: "Get personalized support from certified IELTS trainers who provide proven strategies, answer analysis, and one-on-one feedback sessions.",
   },
 ];

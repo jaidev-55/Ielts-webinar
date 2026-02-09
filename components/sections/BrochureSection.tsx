@@ -62,20 +62,27 @@ function RegForm({ brochure, pdfUrl }: RegFormProps) {
   const validateForm = (): boolean => {
     const newErrors: Partial<FormData> = {};
 
+    // Name
     if (!formData.name.trim()) {
       newErrors.name = "Name is required";
     }
 
+    // Email
     if (!formData.email.trim()) {
       newErrors.email = "Email is required";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = "Invalid email format";
     }
 
+    // Phone
+    const phoneDigits = formData.phone.replace(/\D/g, "");
+
     if (!formData.phone.trim()) {
-      newErrors.phone = "Phone is required";
-    } else if (!/^\+?[\d\s\-()]+$/.test(formData.phone)) {
-      newErrors.phone = "Invalid phone format";
+      newErrors.phone = "Phone number is required";
+    } else if (phoneDigits.length < 10) {
+      newErrors.phone = "Phone number must be at least 10 digits";
+    } else if (phoneDigits.length > 15) {
+      newErrors.phone = "Phone number is too long";
     }
 
     setErrors(newErrors);
@@ -95,7 +102,7 @@ function RegForm({ brochure, pdfUrl }: RegFormProps) {
     if (brochure) {
       setTimeout(() => {
         const link = document.createElement("a");
-        link.href = "/public/images/Abroad-Scholar-Free-Materials.pdf";
+        link.href = "/Abroad-Scholar-Free-Materials.pdf";
         link.download = "Abroad-Scholar-Free-Materials.pdf";
         document.body.appendChild(link);
         link.click();
@@ -208,18 +215,23 @@ function RegForm({ brochure, pdfUrl }: RegFormProps) {
       {/* Phone Input */}
       <div className="relative group">
         <div className="relative">
+          {/* Icon */}
           <div className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-amber-500 transition-colors">
             <HiPhone className="text-lg sm:text-xl" />
           </div>
 
           <input
             type="tel"
+            inputMode="numeric"
+            autoComplete="tel"
             placeholder="Phone Number *"
             value={formData.phone}
             onChange={(e) => {
-              setFormData({ ...formData, phone: e.target.value });
+              const value = e.target.value.replace(/[^\d+]/g, "");
+              setFormData({ ...formData, phone: value });
               setErrors({ ...errors, phone: "" });
             }}
+            maxLength={16}
             className={`w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 rounded-xl border-2 text-sm sm:text-base outline-none transition-all font-nunito bg-gray-50 text-gray-900 placeholder:text-gray-400 ${
               errors.phone
                 ? "border-red-300 focus:border-red-500 focus:bg-red-50/50"
@@ -230,7 +242,7 @@ function RegForm({ brochure, pdfUrl }: RegFormProps) {
           />
         </div>
 
-        {/* Error slot */}
+        {/* Error */}
         <p
           id="phone-error"
           className="min-h-4 text-red-500 text-xs mt-1 ml-1 flex items-center gap-1"
@@ -548,7 +560,7 @@ const BrochureSection: React.FC<BrochureSectionProps> = ({
                   </h3>
                   <p className="text-gray-600 text-xs sm:text-sm font-nunito flex items-center justify-center gap-1.5 sm:gap-2 px-4">
                     <HiCheckCircle className="text-green-500 text-sm sm:text-base" />
-                    Instant access — no waiting
+                    Instant access no waiting
                   </p>
                 </div>
 

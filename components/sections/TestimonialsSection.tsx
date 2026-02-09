@@ -17,10 +17,12 @@ import {
   HiPlay,
   HiPlayCircle,
 } from "react-icons/hi2";
+import ModalForm from "../ModalForm";
 
 const TestimonialsSection: React.FC = () => {
   const [tRef, tVisible] = useInView();
   const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const activeVideo = useVideoScroll("vidscroll", VIDEO_TESTIMONIALS.length);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -90,37 +92,66 @@ const TestimonialsSection: React.FC = () => {
           >
             <span className="inline-flex items-center gap-2 bg-linear-to-r from-amber-400/15 to-amber-500/10 text-amber-500 font-bold text-xs px-5 sm:px-6 py-2.5 rounded-full mb-5 tracking-[1.4px] font-poppins uppercase shadow-sm border border-amber-400/20">
               <HiStar className="w-4 h-4 animate-pulse" />
-              IELTS Student Experiences & Results
+              Real Students, Real Success Stories
             </span>
           </div>
 
           <h2
-            className={`font-poppins text-[28px] sm:text-[36px] lg:text-[44px] font-extrabold text-[#1a1a2e] mb-4 leading-[1.2] transition-all duration-700 delay-100 ${
+            className={`font-poppins text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-[#1a1a2e] mb-3 sm:mb-4 leading-tight transition-all duration-700 delay-100 ${
               tVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
             }`}
           >
-            IELTS Aspirants.
-            <span className="bg-linear-to-r from-amber-400 to-amber-500 bg-clip-text pl-2 text-transparent">
-              Proven Learning Outcomes.
+            Master All 4 IELTS Skills.
+            <span className="block sm:inline bg-linear-to-r from-amber-400 to-amber-500 bg-clip-text sm:pl-2 text-transparent">
+              Achieve Your Dream Score.
             </span>
           </h2>
 
           <p
-            className={`text-[#666] text-[15px] sm:text-[16px] max-w-155 mx-auto font-nunito leading-[1.75] transition-all duration-700 delay-200 ${
+            className={`text-[#666] text-sm sm:text-base md:text-lg max-w-3xl mx-auto font-nunito leading-relaxed transition-all duration-700 delay-200 mb-6 ${
               tVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
             }`}
           >
-            Hear from IELTS aspirants who strengthened their{" "}
+            Join thousands of successful IELTS candidates who mastered{" "}
             <span className="font-semibold text-amber-500">
-              writing performance
+              Listening, Reading, Writing, and Speaking
             </span>{" "}
-            through structured guidance, clear answer frameworks, and
-            examiner-aligned strategies shared by{" "}
+            with expert guidance from{" "}
             <span className="font-semibold text-[#1a1a2e]">
-              Abroad Scholars
-            </span>
-            .
+              certified IELTS trainers
+            </span>{" "}
+            at Abroad Scholars.
           </p>
+          <div
+            className={`transition-all duration-700 delay-300
+    ${tVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}
+    flex justify-center w-full
+  `}
+          >
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="group relative overflow-hidden cursor-pointer
+      bg-amber-400 text-white
+      px-3 sm:px-5 lg:px-8
+      py-2 sm:py-2.5 lg:py-3
+      rounded-full
+      font-bold text-xs sm:text-sm lg:text-base
+      transition-all duration-300
+      hover:shadow-xl hover:shadow-amber-500/30
+      hover:scale-105 active:scale-95
+      flex items-center justify-center gap-2
+      border border-amber-400/50"
+            >
+              {/* Shimmer */}
+              <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out">
+                <span className="absolute inset-0 bg-linear-to-r from-transparent via-white/40 to-transparent -skew-x-12" />
+              </span>
+
+              <span className="relative z-10">
+                Book Your Free IELTS Consultation
+              </span>
+            </button>
+          </div>
         </div>
 
         {/* Testimonial Cards */}
@@ -164,7 +195,7 @@ const TestimonialsSection: React.FC = () => {
 
               <button
                 onClick={() => scrollVideoContainer("vidscroll", -400)}
-                className="group w-11 h-11 rounded-xl border border-slate-200 bg-white flex items-center justify-center transition-all hover:border-amber-400 hover:shadow-md"
+                className="group cursor-pointer w-11 h-11 rounded-xl border border-slate-200 bg-white flex items-center justify-center transition-all hover:border-amber-400 hover:shadow-md"
                 aria-label="Previous video"
               >
                 <HiChevronLeft className="w-6 h-6 text-[#666] group-hover:text-amber-500" />
@@ -172,7 +203,7 @@ const TestimonialsSection: React.FC = () => {
 
               <button
                 onClick={() => scrollVideoContainer("vidscroll", 400)}
-                className="group w-11 h-11 rounded-xl border border-amber-400 bg-linear-to-r from-amber-400 to-amber-500 flex items-center justify-center transition-all hover:shadow-lg"
+                className="group w-11 h-11 cursor-pointer rounded-xl border border-amber-400 bg-linear-to-r from-amber-400 to-amber-500 flex items-center justify-center transition-all hover:shadow-lg"
                 aria-label="Next video"
               >
                 <HiChevronRight className="w-6 h-6 text-white" />
@@ -368,42 +399,11 @@ const TestimonialsSection: React.FC = () => {
         </div>
       )}
 
-      <style jsx>{`
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-        .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        @keyframes shimmer {
-          0% {
-            transform: translateX(-100%);
-          }
-          100% {
-            transform: translateX(100%);
-          }
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.3s ease-out;
-        }
-        .animate-shimmer {
-          animation: shimmer 2s infinite;
-        }
-        .delay-700 {
-          animation-delay: 700ms;
-        }
-      `}</style>
+      <ModalForm
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        brochure={false}
+      />
     </section>
   );
 };
