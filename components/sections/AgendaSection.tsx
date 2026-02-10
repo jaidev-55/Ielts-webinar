@@ -260,7 +260,6 @@ const AgendaSection = () => {
             included
           </p>
 
-          {/* Main CTA */}
           <button
             onClick={() => setIsModalOpen(true)}
             className="group cursor-pointer relative overflow-hidden bg-linear-to-r from-amber-400 via-amber-500 to-amber-400 text-white px-7 sm:px-10 py-3 sm:py-4 rounded-full font-extrabold text-sm sm:text-base lg:text-lg transition-all duration-300 hover:shadow-2xl hover:shadow-amber-500/40 hover:scale-105 active:scale-95 inline-flex items-center gap-2 sm:gap-3 border border-amber-300/30"
