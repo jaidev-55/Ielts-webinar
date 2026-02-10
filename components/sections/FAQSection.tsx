@@ -171,11 +171,7 @@ const FAQSection = () => {
           </button>
         </div>
       </div>
-      <ModalForm
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        brochure={false}
-      />
+      <ModalForm isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </section>
   );
 };

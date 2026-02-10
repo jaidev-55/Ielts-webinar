@@ -2,14 +2,17 @@
 
 import React, { useState } from "react";
 import { FormData } from "../types";
-import { FaCheckCircle, FaRocket } from "react-icons/fa";
+import { FaCheckCircle, FaRocket, FaSpinner } from "react-icons/fa";
 import { motion } from "framer-motion";
+import {
+  EMAIL_REGEX,
+  PHONE_SANITIZE_REGEX,
+  PHONE_DIGITS_REGEX,
+} from "@/utils/regex";
 
-interface RegistrationFormProps {
-  brochure: boolean;
-}
+import CustomInput from "./common/CustomInput";
 
-const RegistrationForm: React.FC<RegistrationFormProps> = ({ brochure }) => {
+const RegistrationForm = () => {
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [formData, setFormData] = useState<FormData>({
     name: "",
@@ -17,46 +20,81 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ brochure }) => {
     phone: "",
     city: "",
   });
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
   const [errors, setErrors] = useState<Partial<FormData>>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const validateForm = () => {
+    // Collect validation errors
     const newErrors: Partial<FormData> = {};
 
-    // Name
+    // Validate name
     if (!formData.name.trim()) {
       newErrors.name = "Name is required";
     }
 
-    // Email
+    // Validate email format
     if (!formData.email.trim()) {
       newErrors.email = "Email is required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    } else if (!EMAIL_REGEX.test(formData.email)) {
       newErrors.email = "Enter a valid email address";
     }
 
-    // Phone
-    const phoneDigits = formData.phone.replace(/\D/g, "");
+    // Sanitize and validate phone number
+    const phoneDigits = formData.phone.replace(PHONE_SANITIZE_REGEX, "");
+
     if (!phoneDigits) {
       newErrors.phone = "Phone number is required";
-    } else if (phoneDigits.length < 10) {
-      newErrors.phone = "Phone number must be at least 10 digits";
-    } else if (phoneDigits.length > 15) {
-      newErrors.phone = "Phone number is too long";
+    } else if (!PHONE_DIGITS_REGEX.test(phoneDigits)) {
+      newErrors.phone = "Phone number must be 10–15 digits";
     }
 
+    // Validate city
     if (!formData.city.trim()) {
       newErrors.city = "City is required";
     }
 
+    // Update error state and return validation result
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!validateForm()) return;
-    setIsSubmitted(true);
+
+    setLoading(true);
+
+    try {
+      const res = await fetch("/api/leads", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          full_name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          city: formData.city,
+          test_type: "Academic",
+          source_form: "ielts_hero_form",
+          page_url: window.location.href,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to submit form");
+      }
+
+      setSuccess(true);
+      setIsSubmitted(true);
+    } catch (error) {
+      console.error("Form submission error:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -76,21 +114,24 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ brochure }) => {
           <FaCheckCircle className="text-3xl sm:text-4xl text-green-500" />
         </div>
         <h3 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2 font-poppins">
-          {brochure ? "Brochure on the Way!" : "You're Registered!"}
+          You're Registered!
         </h3>
         <p className="text-sm sm:text-base text-gray-600 font-nunito px-4">
-          {brochure
-            ? "Check your email in 2 minutes."
-            : "Webinar details sent to your email!"}
+          Webinar details sent to your email!
         </p>
       </motion.div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4 w-full">
+    <form
+      onSubmit={handleSubmit}
+      className={`space-y-3 sm:space-y-4 w-full transition-opacity ${
+        loading ? "opacity-70 pointer-events-none" : ""
+      }`}
+    >
       {/* Name */}
-      <Field
+      <CustomInput
         name="name"
         placeholder="Your Full Name *"
         value={formData.name}
@@ -102,7 +143,7 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ brochure }) => {
       />
 
       {/* Email */}
-      <Field
+      <CustomInput
         name="email"
         type="email"
         placeholder="Email Address *"
@@ -115,7 +156,7 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ brochure }) => {
       />
 
       {/* Phone */}
-      <Field
+      <CustomInput
         name="phone"
         type="tel"
         placeholder="Phone Number *"
@@ -132,7 +173,7 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ brochure }) => {
       />
 
       {/* City */}
-      <Field
+      <CustomInput
         name="city"
         placeholder="Enter Your City *"
         value={formData.city}
@@ -146,12 +187,29 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ brochure }) => {
       {/* Submit Button */}
       <button
         type="submit"
-        className="group cursor-pointer relative w-full px-5 sm:px-6 py-3.5 sm:py-4 rounded-xl font-bold text-sm sm:text-base text-white bg-amber-400 transition-all duration-300 flex items-center justify-center gap-2 mt-2 font-poppins shadow-lg shadow-amber-500/30 hover:shadow-xl hover:-translate-y-0.5 active:scale-95 overflow-hidden"
+        disabled={loading}
+        className={`group cursor-pointer relative w-full px-5 sm:px-6 py-3.5 sm:py-4 rounded-xl
+    font-bold text-sm sm:text-base text-white font-poppins
+    flex items-center justify-center gap-2 mt-2 transition-all duration-300
+    shadow-lg overflow-hidden
+    ${
+      loading
+        ? "bg-amber-300 cursor-not-allowed"
+        : "bg-amber-400 hover:shadow-xl hover:-translate-y-0.5 active:scale-95"
+    }
+  `}
       >
-        <FaRocket className="relative z-10 w-4 h-4 group-hover:scale-110 transition-transform" />
-        <span className="relative z-10">
-          {brochure ? "Download Free Brochure" : "Book your classes"}
-        </span>
+        {loading ? (
+          <>
+            <FaSpinner className="animate-spin w-4 h-4" />
+            <span>Submitting…</span>
+          </>
+        ) : (
+          <>
+            <FaRocket className="w-4 h-4 group-hover:scale-110 transition-transform" />
+            <span>Book your classes</span>
+          </>
+        )}
       </button>
 
       <p className="text-[11px] sm:text-xs text-gray-400 text-center mt-2 font-nunito">
@@ -160,48 +218,5 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ brochure }) => {
     </form>
   );
 };
-
-interface FieldProps {
-  name: keyof FormData;
-  type?: string;
-  placeholder: string;
-  value: string;
-  error?: string;
-  focused: boolean;
-  onFocus: () => void;
-  onBlur: () => void;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-}
-
-const Field: React.FC<FieldProps> = ({
-  name,
-  type = "text",
-  placeholder,
-  value,
-  error,
-  focused,
-  onFocus,
-  onBlur,
-  onChange,
-}) => (
-  <div className="relative">
-    <input
-      type={type}
-      name={name}
-      placeholder={placeholder}
-      value={value}
-      onChange={onChange}
-      onFocus={onFocus}
-      onBlur={onBlur}
-      className="w-full px-4 py-3 rounded-xl border-2 text-sm font-nunito outline-none transition-all"
-      style={{
-        borderColor: error ? "#EF4444" : focused ? "#FBBF24" : "#E5E7EB",
-        backgroundColor: "#fff",
-        boxShadow: focused ? "0 0 0 3px rgba(251,191,36,0.1)" : "none",
-      }}
-    />
-    {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
-  </div>
-);
 
 export default RegistrationForm;

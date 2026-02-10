@@ -2,20 +2,20 @@
 
 import React, { useState } from "react";
 import { useInView } from "@/hooks";
+import Image from "next/image";
 import {
   HiAcademicCap,
   HiGlobeAlt,
   HiSparkles,
   HiCheckCircle,
   HiArrowRight,
-  HiOutlineGlobeAlt,
 } from "react-icons/hi2";
 import ModalForm from "../ModalForm";
-import { IconType } from "react-icons";
 import ReactCountryFlag from "react-country-flag";
 
 interface Country {
   name: string;
+  flag: string;
   code: string;
   unis: string;
   minIELTS: string;
@@ -27,6 +27,7 @@ const COUNTRIES: Country[] = [
   {
     name: "UK",
     code: "GB",
+    flag: "/images/flags/uk.svg",
     unis: "130+ Universities",
     minIELTS: "IELTS 6.0+",
     description: "World-class education with historic institutions",
@@ -35,6 +36,7 @@ const COUNTRIES: Country[] = [
   {
     name: "Canada",
     code: "CA",
+    flag: "/images/flags/canada.svg",
     unis: "90+ Universities",
     minIELTS: "IELTS 6.5+",
     description: "Post-study work visa & immigration pathways",
@@ -43,6 +45,7 @@ const COUNTRIES: Country[] = [
   {
     name: "Australia",
     code: "AU",
+    flag: "/images/flags/australia.svg",
     unis: "85+ Universities",
     minIELTS: "IELTS 6.5+",
     description: "High quality of life & excellent job opportunities",
@@ -51,6 +54,7 @@ const COUNTRIES: Country[] = [
   {
     name: "USA",
     code: "US",
+    flag: "/images/flags/usa.svg",
     unis: "200+ Universities",
     minIELTS: "IELTS 6.0+",
     description: "Top-ranked universities & research opportunities",
@@ -59,6 +63,7 @@ const COUNTRIES: Country[] = [
   {
     name: "Ireland",
     code: "IE",
+    flag: "/images/flags/Ireland.svg",
     unis: "35+ Universities",
     minIELTS: "IELTS 6.5+",
     description: "Tech hub of Europe with friendly culture",
@@ -67,6 +72,7 @@ const COUNTRIES: Country[] = [
   {
     name: "New Zealand",
     code: "NZ",
+    flag: "/images/flags/new_zealand.svg",
     unis: "25+ Universities",
     minIELTS: "IELTS 6.5+",
     description: "Safe, beautiful & welcoming environment",
@@ -75,6 +81,7 @@ const COUNTRIES: Country[] = [
   {
     name: "Germany",
     code: "DE",
+    flag: "/images/flags/Germany.svg",
     unis: "40+ Universities",
     minIELTS: "IELTS 6.0+",
     description: "Low tuition fees & strong economy",
@@ -83,6 +90,7 @@ const COUNTRIES: Country[] = [
   {
     name: "France",
     code: "FR",
+    flag: "/images/flags/France.svg",
     unis: "30+ Universities",
     minIELTS: "IELTS 6.0+",
     description: "Rich culture & affordable education",
@@ -193,13 +201,14 @@ const CountriesSection: React.FC = () => {
               <div className="relative p-6 sm:p-7 text-center">
                 {/* Icon */}
                 <div className="mb-4 transform transition-transform duration-300 group-hover:scale-110">
-                  <div className="mb-4 transform transition-transform duration-300 group-hover:scale-110">
-                    <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-slate-800/60 border border-slate-600/50 shadow-lg">
-                      <ReactCountryFlag
-                        svg
-                        countryCode={country.code}
-                        className="w-12 h-12 sm:w-14 sm:h-28 rounded-md"
-                        title={country.name}
+                  <div className="mb-4 transition-transform duration-300 group-hover:scale-110">
+                    <div className="relative inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-slate-800/60 shadow-lg">
+                      <Image
+                        src={country.flag}
+                        alt={`${country.name} flag`}
+                        fill
+                        sizes="80px"
+                        className="object-cover rounded-md"
                       />
                     </div>
                   </div>
@@ -273,11 +282,7 @@ const CountriesSection: React.FC = () => {
           </button>
         </div>
       </div>
-      <ModalForm
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        brochure={false}
-      />
+      <ModalForm isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </section>
   );
 };

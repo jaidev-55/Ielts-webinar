@@ -77,7 +77,7 @@ const StickyHeader: React.FC<StickyHeaderProps> = ({ visible }) => {
             {/* Register Button */}
             <button
               onClick={() => setIsModalOpen(true)}
-              className="group relative overflow-hidden bg-amber-400 text-white px-3 sm:px-5 lg:px-8 py-2 sm:py-2.5 lg:py-3 cursor-pointer rounded-full sm:rounded-xl font-bold text-xs sm:text-sm lg:text-base transition-all duration-300 hover:shadow-xl hover:shadow-amber-500/30 hover:scale-105 active:scale-95 flex items-center justify-center gap-1.5 sm:gap-2 border border-amber-400/50"
+              className="group  relative overflow-hidden bg-amber-400 text-white px-3 sm:px-5 lg:px-8 py-2 sm:py-2.5 lg:py-3 cursor-pointer rounded-full sm:rounded-xl font-bold text-xs sm:text-sm lg:text-base transition-all duration-300 hover:shadow-xl hover:shadow-amber-500/30 hover:scale-105 active:scale-95 flex items-center justify-center gap-1.5 sm:gap-2 border border-amber-400/50"
             >
               {/* Shimmer */}
               <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out">
@@ -86,7 +86,7 @@ const StickyHeader: React.FC<StickyHeaderProps> = ({ visible }) => {
 
               <FaRocket className="w-3.5 h-3.5 sm:hidden relative z-10 drop-shadow-sm" />
 
-              <span className="relative z-10 font-extrabold  sm:inline tracking-wide drop-shadow-sm">
+              <span className="relative cursor-pointer z-10 font-extrabold  sm:inline tracking-wide drop-shadow-sm">
                 Apply Now
               </span>
 
@@ -105,11 +105,7 @@ const StickyHeader: React.FC<StickyHeaderProps> = ({ visible }) => {
         />
       </div>
 
-      <ModalForm
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        brochure={false}
-      />
+      <ModalForm isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </>
   );
 };

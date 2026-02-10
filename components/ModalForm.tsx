@@ -6,19 +6,31 @@ import {
   FaRocket,
   FaCheckCircle,
   FaGraduationCap,
+  FaSpinner,
 } from "react-icons/fa";
+import {
+  EMAIL_REGEX,
+  PHONE_DIGITS_REGEX,
+  PHONE_SANITIZE_REGEX,
+} from "@/utils/regex";
+import CustomInput from "./common/CustomInput";
 
 interface ModalFormProps {
   isOpen: boolean;
   onClose: () => void;
-  brochure?: boolean;
 }
 
-const ModalForm: React.FC<ModalFormProps> = ({
-  isOpen,
-  onClose,
-  brochure = false,
-}) => {
+type ModalFormData = {
+  name: string;
+  email: string;
+  phone: string;
+  city: string;
+};
+
+const ModalForm: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
+  const [errors, setErrors] = useState<Partial<ModalFormData>>({});
+
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -40,15 +52,75 @@ const ModalForm: React.FC<ModalFormProps> = ({
     };
   }, [isOpen]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const validateForm = () => {
+    const newErrors: Partial<typeof formData> = {};
+
+    if (!formData.name.trim()) {
+      newErrors.name = "Name is required";
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!EMAIL_REGEX.test(formData.email)) {
+      newErrors.email = "Enter a valid email address";
+    }
+
+    const phoneDigits = formData.phone.replace(PHONE_SANITIZE_REGEX, "");
+
+    if (!phoneDigits) {
+      newErrors.phone = "Phone number is required";
+    } else if (!PHONE_DIGITS_REGEX.test(phoneDigits)) {
+      newErrors.phone = "Phone number must be 10–15 digits";
+    }
+
+    if (!formData.city.trim()) {
+      newErrors.city = "City is required";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (formData.name && formData.email && formData.phone && formData.city) {
+    if (loading) return;
+
+    if (!validateForm()) return;
+
+    setLoading(true);
+
+    try {
+      const res = await fetch("/api/leads", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          full_name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          city: formData.city,
+          test_type: "Academic",
+          source_form: "modal_form",
+          page_url: window.location.href,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to submit form");
+      }
+
       setIsSubmitted(true);
+
       setTimeout(() => {
         onClose();
         setIsSubmitted(false);
         setFormData({ name: "", email: "", phone: "", city: "" });
       }, 3000);
+    } catch (err) {
+      console.error("Modal form submission error:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -118,7 +190,7 @@ const ModalForm: React.FC<ModalFormProps> = ({
             onClick={onClose}
           />
 
-          {/* Modal Container - Mobile Optimized */}
+          {/* Modal Container */}
           <div className="fixed inset-0 z-9999 flex items-center justify-center p-3 sm:p-4 pointer-events-none overflow-y-auto">
             <motion.div
               variants={modalVariants}
@@ -136,7 +208,7 @@ const ModalForm: React.FC<ModalFormProps> = ({
                     "0 30px 80px rgba(0,0,0,0.3), 0 10px 30px rgba(0,0,0,0.2)",
                 }}
               >
-                {/* Close Button - Mobile Optimized */}
+                {/* Close Button */}
                 <button
                   onClick={onClose}
                   className="absolute cursor-pointer top-3 right-3 sm:top-4 sm:right-4 z-10 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gray-100 hover:bg-gray-200 active:bg-gray-300 flex items-center justify-center transition-all duration-200 group shadow-sm"
@@ -157,7 +229,7 @@ const ModalForm: React.FC<ModalFormProps> = ({
                   <span>Admissions Now Open</span>
                 </div>
 
-                {/* Content - Mobile Optimized Padding */}
+                {/* Content */}
                 <div className="p-5 sm:p-8 pt-14 sm:pt-16">
                   {!isSubmitted ? (
                     <>
@@ -182,116 +254,79 @@ const ModalForm: React.FC<ModalFormProps> = ({
                         </p>
                       </div>
 
-                      {/* Form - Mobile Optimized Spacing */}
                       <form
                         onSubmit={handleSubmit}
-                        className="space-y-3 sm:space-y-4"
+                        className={`space-y-3 sm:space-y-4 ${
+                          loading ? "pointer-events-none opacity-70" : ""
+                        }`}
                       >
                         {/* Name Input */}
                         <div className="relative">
-                          <input
-                            type="text"
+                          <CustomInput
                             name="name"
                             placeholder="Your Full Name *"
                             value={formData.name}
-                            onChange={handleChange}
+                            error={errors.name}
+                            focused={focusedField === "name"}
                             onFocus={() => setFocusedField("name")}
                             onBlur={() => setFocusedField(null)}
-                            required
-                            className="w-full px-4 py-3 sm:py-3.5 rounded-xl border-2 text-gray-800 text-sm font-nunito transition-all duration-300 outline-none"
-                            style={{
-                              borderColor:
-                                focusedField === "name" ? "#FBBF24" : "#E5E7EB",
-                              backgroundColor:
-                                focusedField === "name" ? "#fff" : "#F9FAFB",
-                              boxShadow:
-                                focusedField === "name"
-                                  ? "0 0 0 3px rgba(251,191,36,0.1)"
-                                  : "none",
-                            }}
+                            onChange={handleChange}
                           />
                         </div>
 
                         {/* Email Input */}
                         <div className="relative">
-                          <input
-                            type="email"
+                          <CustomInput
                             name="email"
+                            type="email"
                             placeholder="Email Address *"
                             value={formData.email}
-                            onChange={handleChange}
+                            error={errors.email}
+                            focused={focusedField === "email"}
                             onFocus={() => setFocusedField("email")}
                             onBlur={() => setFocusedField(null)}
-                            required
-                            className="w-full px-4 py-3 sm:py-3.5 rounded-xl border-2 text-gray-800 text-sm font-nunito transition-all duration-300 outline-none"
-                            style={{
-                              borderColor:
-                                focusedField === "email"
-                                  ? "#FBBF24"
-                                  : "#E5E7EB",
-                              backgroundColor:
-                                focusedField === "email" ? "#fff" : "#F9FAFB",
-                              boxShadow:
-                                focusedField === "email"
-                                  ? "0 0 0 3px rgba(251,191,36,0.1)"
-                                  : "none",
-                            }}
+                            onChange={handleChange}
                           />
                         </div>
 
                         {/* Phone Input */}
                         <div className="relative">
-                          <input
-                            type="tel"
+                          <CustomInput
                             name="phone"
+                            type="tel"
                             placeholder="Phone Number *"
                             value={formData.phone}
-                            onChange={handleChange}
+                            error={errors.phone}
+                            focused={focusedField === "phone"}
                             onFocus={() => setFocusedField("phone")}
                             onBlur={() => setFocusedField(null)}
-                            required
-                            className="w-full px-4 py-3 sm:py-3.5 rounded-xl border-2 text-gray-800 text-sm font-nunito transition-all duration-300 outline-none"
-                            style={{
-                              borderColor:
-                                focusedField === "phone"
-                                  ? "#FBBF24"
-                                  : "#E5E7EB",
-                              backgroundColor:
-                                focusedField === "phone" ? "#fff" : "#F9FAFB",
-                              boxShadow:
-                                focusedField === "phone"
-                                  ? "0 0 0 3px rgba(251,191,36,0.1)"
-                                  : "none",
+                            onChange={(e) => {
+                              const value = e.target.value.replace(
+                                /[^\d+]/g,
+                                "",
+                              );
+                              setFormData({ ...formData, phone: value });
+                              setErrors({ ...errors, phone: "" });
                             }}
                           />
                         </div>
 
                         {/* City Input */}
                         <div className="relative">
-                          <input
-                            type="text"
+                          <CustomInput
                             name="city"
                             placeholder="Enter Your City *"
                             value={formData.city}
-                            onChange={handleChange}
+                            error={errors.city}
+                            focused={focusedField === "city"}
                             onFocus={() => setFocusedField("city")}
                             onBlur={() => setFocusedField(null)}
-                            required
-                            className="w-full px-4 py-3 sm:py-3.5 rounded-xl border-2 text-gray-800 text-sm font-nunito transition-all duration-300 outline-none"
-                            style={{
-                              borderColor:
-                                focusedField === "city" ? "#FBBF24" : "#E5E7EB",
-                              backgroundColor:
-                                focusedField === "city" ? "#fff" : "#F9FAFB",
-                              boxShadow:
-                                focusedField === "city"
-                                  ? "0 0 0 3px rgba(251,191,36,0.1)"
-                                  : "none",
-                            }}
+                            onChange={handleChange}
                           />
                         </div>
 
                         {/* Submit Button */}
+
                         <button
                           type="submit"
                           className="group relative w-full px-5 sm:px-6 py-3.5 sm:py-4 rounded-xl font-bold text-sm sm:text-base text-white bg-linear-to-r from-amber-400 via-amber-500 to-amber-400 border-none cursor-pointer transition-all duration-300 flex items-center justify-center gap-2 mt-2 font-poppins shadow-lg shadow-amber-500/30 hover:shadow-xl hover:shadow-amber-500/40 hover:-translate-y-0.5 active:scale-95 overflow-hidden"
@@ -307,15 +342,19 @@ const ModalForm: React.FC<ModalFormProps> = ({
                           </span>
 
                           {/* Pulsing glow */}
-                          <span className="absolute inset-0 bg-linear-to-r from-amber-400/0 via-amber-300/30 to-amber-400/0 opacity-0 group-hover:opacity-100 animate-pulse transition-opacity duration-500" />
-
-                          {/* Content */}
-                          <FaRocket className="relative z-10 w-4 h-4 transition-transform duration-300 group-hover:rotate-[-10deg] group-hover:scale-110 drop-shadow-sm" />
-                          <span className="relative z-10 drop-shadow-sm">
-                            {brochure
-                              ? "Download Free Brochure"
-                              : "Reserve My Seat Now"}
-                          </span>
+                          {loading ? (
+                            <>
+                              <FaSpinner className="animate-spin w-4 h-4" />
+                              <span>Submitting…</span>
+                            </>
+                          ) : (
+                            <>
+                              <FaRocket className="relative z-10 w-4 h-4 transition-transform group-hover:scale-110" />
+                              <span className="relative z-10">
+                                Reserve My Seat Now
+                              </span>
+                            </>
+                          )}
                         </button>
 
                         {/* Security Text */}
@@ -325,7 +364,6 @@ const ModalForm: React.FC<ModalFormProps> = ({
                       </form>
                     </>
                   ) : (
-                    // Success State - Mobile Optimized
                     <motion.div
                       variants={successVariants}
                       initial="hidden"
@@ -336,14 +374,10 @@ const ModalForm: React.FC<ModalFormProps> = ({
                         <FaCheckCircle className="text-3xl sm:text-4xl text-green-500" />
                       </div>
                       <h3 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2 font-poppins">
-                        {brochure
-                          ? "Brochure on the Way!"
-                          : "You're Registered!"}
+                        You're Registered!
                       </h3>
                       <p className="text-sm sm:text-base text-gray-600 font-nunito px-4">
-                        {brochure
-                          ? "Check your email in 2 minutes."
-                          : "Webinar details sent to your email!"}
+                        Webinar details sent to your email!
                       </p>
                     </motion.div>
                   )}

@@ -26,14 +26,21 @@ import {
   HiClipboardList,
   HiDownload,
   HiLightningBolt,
+  HiLocationMarker,
   HiMail,
   HiOutlineRefresh,
 } from "react-icons/hi";
+import {
+  EMAIL_REGEX,
+  PHONE_DIGITS_REGEX,
+  PHONE_SANITIZE_REGEX,
+} from "@/utils/regex";
 
 interface FormData {
   name: string;
   email: string;
   phone: string;
+  city: string;
   testType: string;
 }
 
@@ -53,6 +60,7 @@ function RegForm({ brochure, pdfUrl }: RegFormProps) {
     name: "",
     email: "",
     phone: "",
+    city: "",
     testType: "",
   });
   const [done, setDone] = useState(false);
@@ -62,27 +70,26 @@ function RegForm({ brochure, pdfUrl }: RegFormProps) {
   const validateForm = (): boolean => {
     const newErrors: Partial<FormData> = {};
 
-    // Name
     if (!formData.name.trim()) {
       newErrors.name = "Name is required";
     }
 
-    // Email
     if (!formData.email.trim()) {
       newErrors.email = "Email is required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    } else if (!EMAIL_REGEX.test(formData.email)) {
       newErrors.email = "Invalid email format";
     }
 
-    // Phone
-    const phoneDigits = formData.phone.replace(/\D/g, "");
+    const phoneDigits = formData.phone.replace(PHONE_SANITIZE_REGEX, "");
 
-    if (!formData.phone.trim()) {
+    if (!phoneDigits) {
       newErrors.phone = "Phone number is required";
-    } else if (phoneDigits.length < 10) {
-      newErrors.phone = "Phone number must be at least 10 digits";
-    } else if (phoneDigits.length > 15) {
-      newErrors.phone = "Phone number is too long";
+    } else if (!PHONE_DIGITS_REGEX.test(phoneDigits)) {
+      newErrors.phone = "Phone number must be 10–15 digits";
+    }
+
+    if (!formData.city.trim()) {
+      newErrors.city = "City is required";
     }
 
     setErrors(newErrors);
@@ -90,24 +97,47 @@ function RegForm({ brochure, pdfUrl }: RegFormProps) {
   };
 
   const handleSubmit = async () => {
-    if (!validateForm()) return;
+    if (!validateForm() || isSubmitting) return;
 
     setIsSubmitting(true);
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setDone(true);
-    setIsSubmitting(false);
+    try {
+      const res = await fetch("/api/leads", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          full_name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          city: formData.city,
+          test_type: formData.testType || "Not Sure",
+          source_form: "brochure_form",
+          page_url: window.location.href,
+        }),
+      });
 
-    if (brochure) {
-      setTimeout(() => {
-        const link = document.createElement("a");
-        link.href = "/Abroad-Scholar-Free-Materials.pdf";
-        link.download = "Abroad-Scholar-Free-Materials.pdf";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }, 300);
+      if (!res.ok) {
+        throw new Error("Lead submission failed");
+      }
+
+      setDone(true);
+
+      if (brochure && pdfUrl) {
+        setTimeout(() => {
+          const link = document.createElement("a");
+          link.href = "/Abroad-Scholar-Free-Materials.pdf";
+          link.download = "Abroad-Scholar-Free-Materials.pdf";
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        }, 300);
+      }
+    } catch (error) {
+      console.error("Brochure form error:", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -137,7 +167,13 @@ function RegForm({ brochure, pdfUrl }: RegFormProps) {
   }
 
   return (
-    <div className="space-y-3 sm:space-y-4">
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        handleSubmit();
+      }}
+      className="space-y-3 sm:space-y-4"
+    >
       {/* Name Input */}
       <div className="relative group">
         <div className="relative">
@@ -256,6 +292,46 @@ function RegForm({ brochure, pdfUrl }: RegFormProps) {
         </p>
       </div>
 
+      {/* City Input */}
+      <div className="relative group">
+        <div className="relative">
+          {/* Icon */}
+          <div className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-amber-500 transition-colors">
+            <HiLocationMarker className="text-lg sm:text-xl" />
+          </div>
+
+          <input
+            type="text"
+            placeholder="City *"
+            value={formData.city}
+            onChange={(e) => {
+              setFormData({ ...formData, city: e.target.value });
+              setErrors({ ...errors, city: "" });
+            }}
+            className={`w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 rounded-xl border-2 text-sm sm:text-base outline-none transition-all font-nunito bg-gray-50 text-gray-900 placeholder:text-gray-400 ${
+              errors.city
+                ? "border-red-300 focus:border-red-500 focus:bg-red-50/50"
+                : "border-gray-200 focus:border-amber-500 focus:bg-white focus:shadow-[0_0_0_4px_rgba(245,158,11,0.08)]"
+            }`}
+            aria-invalid={!!errors.city}
+            aria-describedby="city-error"
+          />
+        </div>
+
+        {/* Error */}
+        <p
+          id="city-error"
+          className="min-h-4 text-red-500 text-xs mt-1 ml-1 flex items-center gap-1"
+        >
+          {errors.city && (
+            <>
+              <span className="w-1 h-1 rounded-full bg-red-500" />
+              {errors.city}
+            </>
+          )}
+        </p>
+      </div>
+
       {/* Test Type Select */}
       <div className="relative group">
         <div className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-amber-500 transition-colors pointer-events-none z-10">
@@ -297,22 +373,32 @@ function RegForm({ brochure, pdfUrl }: RegFormProps) {
 
       {/* Submit Button */}
       <button
-        onClick={handleSubmit}
+        type="submit"
         disabled={isSubmitting}
-        className="group w-full px-4 sm:px-6 py-3 sm:py-4 rounded-xl bg-amber-400 text-white font-bold text-sm sm:text-base transition-all duration-300 font-poppins shadow-lg shadow-amber-500/30 hover:shadow-xl hover:shadow-amber-500/40 hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-lg flex items-center justify-center gap-2 relative overflow-hidden cursor-pointer"
+        className={`group cursor-pointer relative w-full px-4 sm:px-6 py-3 sm:py-4 rounded-xl
+    font-bold text-sm sm:text-base font-poppins text-white
+    flex items-center justify-center gap-2
+    transition-all duration-300
+    shadow-lg overflow-hidden
+    ${
+      isSubmitting
+        ? "bg-amber-300 cursor-not-allowed opacity-70"
+        : "bg-amber-400 shadow-amber-500/30 hover:shadow-xl hover:shadow-amber-500/40 hover:-translate-y-0.5 active:scale-95"
+    }
+  `}
       >
-        {/* Content */}
-        <span className="relative z-10 flex items-center justify-center gap-2">
+        {/* Button content */}
+        <span className="relative z-10 flex items-center gap-2">
           {isSubmitting ? (
             <>
               <HiOutlineRefresh className="animate-spin text-lg sm:text-xl" />
-              <span>Processing...</span>
+              <span>Processing…</span>
             </>
           ) : brochure ? (
             <>
-              <HiDownload className="text-lg sm:text-xl group-hover:animate-bounce" />
+              <HiDownload className="text-lg sm:text-xl" />
               <span>Download Free Guide</span>
-              <HiLightningBolt className="text-lg sm:text-xl group-hover:rotate-12 transition-transform" />
+              <HiLightningBolt className="text-lg sm:text-xl transition-transform group-hover:rotate-12" />
             </>
           ) : (
             <>
@@ -323,8 +409,12 @@ function RegForm({ brochure, pdfUrl }: RegFormProps) {
           )}
         </span>
 
-        {/* Shimmer effect */}
-        <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out transform -skew-x-12" />
+        {!isSubmitting && (
+          <div
+            className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out transform -skew-x-12
+      bg-linear-to-r from-transparent via-white/30 to-transparent"
+          />
+        )}
       </button>
 
       {/* Security Badge */}
@@ -332,7 +422,7 @@ function RegForm({ brochure, pdfUrl }: RegFormProps) {
         <HiShieldCheck className="text-green-500 text-sm sm:text-base" />
         <span className="text-center">100% secure. No spam, ever.</span>
       </div>
-    </div>
+    </form>
   );
 }
 
@@ -349,27 +439,27 @@ const BrochureSection: React.FC<BrochureSectionProps> = ({
     {
       icon: FaBook,
       text: "Complete band-wise score requirements & strategies",
-      color: "from-blue-500 to-blue-600",
+      color: "from-blue-400 to-blue-500",
     },
     {
       icon: FaHeadphones,
       text: "Listening section tips with practice materials",
-      color: "from-green-500 to-green-600",
+      color: "from-green-400 to-green-500",
     },
     {
       icon: BiSolidBookOpen,
       text: "Reading comprehension techniques & time management",
-      color: "from-purple-500 to-purple-600",
+      color: "from-purple-400 to-purple-500",
     },
     {
       icon: FaPen,
       text: "Writing Task 1 & 2 templates with examples",
-      color: "from-amber-500 to-amber-600",
+      color: "from-amber-400 to-amber-500",
     },
     {
       icon: FaComments,
       text: "Speaking test strategies & common topics",
-      color: "from-pink-500 to-pink-600",
+      color: "from-pink-400 to-pink-500",
     },
   ];
 
