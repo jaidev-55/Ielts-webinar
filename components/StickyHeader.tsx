@@ -19,7 +19,7 @@ const StickyHeader: React.FC<StickyHeaderProps> = ({ visible }) => {
         }`}
       >
         {/* Background with blur */}
-        <div className="absolute inset-0 bg-white/95 backdrop-blur-xl border-b border-gray-200/60" />
+        <div className="absolute inset-0 bg-white shadow-sm border-b border-gray-200/60" />
 
         {/* Subtle gradient overlay */}
         <div
@@ -36,12 +36,12 @@ const StickyHeader: React.FC<StickyHeaderProps> = ({ visible }) => {
           <div className="flex items-center shrink-0">
             <div className="relative group">
               <Image
-                src="/images/logo.svg"
+                src="/images/logo.webp"
                 alt="Abroad Scholars"
                 width={200}
                 height={100}
-                priority
-                className="h-7 sm:h-9 lg:h-12 w-auto object-contain transition-all duration-300 group-hover:scale-105 drop-shadow-sm"
+                loading="eager"
+                className="h-7 sm:h-9 lg:h-12 w-auto object-contain transition-all duration-300 group-hover:scale-105"
               />
             </div>
           </div>

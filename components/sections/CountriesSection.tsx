@@ -27,7 +27,7 @@ const COUNTRIES: Country[] = [
   {
     name: "UK",
     code: "GB",
-    flag: "/images/flags/uk.svg",
+    flag: "/images/flags/uk.webp",
     unis: "130+ Universities",
     minIELTS: "IELTS 6.0+",
     description: "World-class education with historic institutions",
@@ -36,7 +36,7 @@ const COUNTRIES: Country[] = [
   {
     name: "Canada",
     code: "CA",
-    flag: "/images/flags/canada.svg",
+    flag: "/images/flags/canada.webp",
     unis: "90+ Universities",
     minIELTS: "IELTS 6.5+",
     description: "Post-study work visa & immigration pathways",
@@ -45,7 +45,7 @@ const COUNTRIES: Country[] = [
   {
     name: "Australia",
     code: "AU",
-    flag: "/images/flags/australia.svg",
+    flag: "/images/flags/australia.webp",
     unis: "85+ Universities",
     minIELTS: "IELTS 6.5+",
     description: "High quality of life & excellent job opportunities",
@@ -54,7 +54,7 @@ const COUNTRIES: Country[] = [
   {
     name: "USA",
     code: "US",
-    flag: "/images/flags/usa.svg",
+    flag: "/images/flags/usa.webp",
     unis: "200+ Universities",
     minIELTS: "IELTS 6.0+",
     description: "Top-ranked universities & research opportunities",
@@ -63,7 +63,7 @@ const COUNTRIES: Country[] = [
   {
     name: "Ireland",
     code: "IE",
-    flag: "/images/flags/Ireland.svg",
+    flag: "/images/flags/Ireland.webp",
     unis: "35+ Universities",
     minIELTS: "IELTS 6.5+",
     description: "Tech hub of Europe with friendly culture",
@@ -72,7 +72,7 @@ const COUNTRIES: Country[] = [
   {
     name: "New Zealand",
     code: "NZ",
-    flag: "/images/flags/new_zealand.svg",
+    flag: "/images/flags/new_zealand.webp",
     unis: "25+ Universities",
     minIELTS: "IELTS 6.5+",
     description: "Safe, beautiful & welcoming environment",
@@ -81,7 +81,7 @@ const COUNTRIES: Country[] = [
   {
     name: "Germany",
     code: "DE",
-    flag: "/images/flags/Germany.svg",
+    flag: "/images/flags/Germany.webp",
     unis: "40+ Universities",
     minIELTS: "IELTS 6.0+",
     description: "Low tuition fees & strong economy",
@@ -90,7 +90,7 @@ const COUNTRIES: Country[] = [
   {
     name: "France",
     code: "FR",
-    flag: "/images/flags/France.svg",
+    flag: "/images/flags/France.webp",
     unis: "30+ Universities",
     minIELTS: "IELTS 6.0+",
     description: "Rich culture & affordable education",
