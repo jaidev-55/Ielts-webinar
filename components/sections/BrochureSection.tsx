@@ -439,7 +439,7 @@ interface BrochureSectionProps {
 }
 
 const BrochureSection: React.FC<BrochureSectionProps> = ({
-  pdfUrl = "/ielts-guide.pdf",
+  pdfUrl = "/Abroad-Scholar-Free-Materials.pdf",
 }) => {
   const [bRef, bVis] = useInView(0.15);
 
