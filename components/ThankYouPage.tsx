@@ -100,7 +100,7 @@ const ThankYouPage: React.FC<ThankYouPageProps> = ({ onBack }) => {
     const message = encodeURIComponent(
       brochure
         ? `Hi, this is ${name}. I just downloaded the IELTS preparation guide. Can you help me with the next steps?`
-        : `Hi, this is ${name}. I just registered for the IELTS Webinar. Can you help me with the next steps?`,
+        : `Hi, this is ${name}. I’ve registered for the IELTS coaching. Can you please tell me what to do next?`,
     );
     window.open(
       `https://wa.me/${phoneNumber}?text=${message}`,
