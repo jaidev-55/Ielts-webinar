@@ -11,6 +11,9 @@ export const metadata: Metadata = {
   icons: {
     icon: "/favicon.svg",
   },
+  verification: {
+    google: "enJyZDEM5w3U0wIPq8lgfm34hlBCCMbmv36vA1SL4-o",
+  },
 
   keywords: [
     "study abroad",
